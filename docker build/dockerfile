@@ -11,14 +11,18 @@ RUN apt update
 RUN apt install openjdk-11-jdk -y
 RUN apt install gradle -y
 
-# Spring boot 파일 및 스프링부트 실행 쉘 스크립트 추가
+# 작업위치 설정 : /root
 WORKDIR /root/
+# Spring boot 파일 추가 
 ADD armtong/ /root/armtong
+# 스프링부트 실행 쉘 스크립트 추가
 ADD entrypoint.sh run.sh
+# 스프링부트 실행 쉘 스크립트 실행파일 권한 추가
 RUN chmod 775 run.sh
 
-# 웹 서비스 빌드 (오류 발생 방지를 위해 gradle build 5번 실행)
+# 작업위치 설정 : /root/armtong/cccr_temperatureMonitoringService_2020
 WORKDIR /root/armtong/cccr_temperatureMonitoringService_2020
+# 웹 서비스 빌드 (오류 발생 방지를 위해 gradle build 5번 실행)
 RUN gradle build
 RUN gradle build
 RUN gradle build
