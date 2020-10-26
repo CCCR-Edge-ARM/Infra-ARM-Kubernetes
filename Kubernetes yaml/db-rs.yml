@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+
+# ReplicaSet으로 Pod 생성
+# Label - app: db
+kind: ReplicaSet
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+
+        # 컨테이너 이미지 : mariadb:10.5
+        image: mariadb:10.5
+
+        # 환경변수 입력
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "1"
+        - name: MYSQL_DATABASE
+          value: "armtong_proj"
+        - name: MYSQL_USER
+          value: "stack"
+        - name: MYSQL_PASSWORD
+          value: "stack"
+
+        # 컨테이너 포트 지정
+        ports:
+        - name: dbport
+          containerPort: 3306
+
+        # 컨테이너 리소스 지정 (Openstack과 비교를 위해 리소스를 동일하게 반영)
+        resources:
+          requests:
+            # CPU : 4
+            cpu: "4"
+            # 4096MB = 3906.25MiB
+            memory: "3906.25Mi"
+
+        # db내용 저장을 위한 볼륨 생성
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+          
+      # db볼륨이 저장될 장소 (worker node : /root/data)
+      volumes:
+      - name: data
+        hostPath:
+          path: /root/data

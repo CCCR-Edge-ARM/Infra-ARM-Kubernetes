@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+
+# ReplicaSet으로 Pod 생성
+# Label - app: web
+kind: ReplicaSet
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+
+        # 컨테이너 이미지 : mariadb:10.5
+        image: dnjswo890/web:2.0
+
+        # 컨테이너 포트 지정
+        ports:
+        - name: webport
+          containerPort: 8080
+
+        # 컨테이너 리소스 지정 (Openstack과 비교를 위해 리소스를 동일하게 반영)
+        resources:
+          requests:
+            # CPU : 4
+            cpu: "4"
+            # 4096MB = 3906.25MiB
+            memory: "3906.25Mi"

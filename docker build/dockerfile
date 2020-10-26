@@ -1,0 +1,29 @@
+# 베이스 이미지 : Ubuntu:18.04
+FROM ubuntu:18.04
+
+# openjdk 11, gradle 6.6.1 저장소 추가
+RUN apt update
+RUN add-apt-repository ppa:openjdk-r/ppa -y
+RUN add-apt-repository ppa:cwchien/gradle -y
+RUN apt update
+
+# openjdk 11, gradle 6.6.1 설치
+RUN apt install openjdk-11-jdk -y
+RUN apt install gradle -y
+
+# Spring boot 파일 및 스프링부트 실행 쉘 스크립트 추가
+WORKDIR /root/
+ADD armtong/ /root/armtong
+ADD entrypoint.sh run.sh
+RUN chmod 775 run.sh
+
+# 웹 서비스 빌드 (오류 발생 방지를 위해 gradle build 5번 실행)
+WORKDIR /root/armtong/cccr_temperatureMonitoringService_2020
+RUN gradle build
+RUN gradle build
+RUN gradle build
+RUN gradle build
+RUN gradle build
+
+# 스프링 부트 실행 쉘 스크립트를 엔트리 포인트로 지정
+ENTRYPOINT ["/.run.sh"]
